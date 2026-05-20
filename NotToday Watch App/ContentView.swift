@@ -10,33 +10,61 @@ import WatchKit
 
 struct ContentView: View {
 
-    let phrases = [
-        "Не сегодня.",
-        "Пусть оно само.",
-        "Ну и ладно.",
-        "Потом.",
-        "Очень не хочется.",
-        "Не мои проблемы.",
-        "Абсолютно нет.",
-        "Я пас.",
-        "Оставим это будущему мне.",
-        "Как-нибудь."
+    let phrases: [(emoji: String, text: String)] = [
+
+        ("🙃", "Вот и всё..."),
+        ("🙂‍↔️", "Не сегодня..."),
+        ("🤡", "Отлично. Просто отлично."),
+        ("🫠", "Очень не хочется."),
+        ("😵", "С меня хватит."),
+        ("🥲", "Пусть оно само."),
+        ("🤝", "Не моя проблема..."),
+        ("🚬", "Надо подумать... лет пять."),
+        ("🪦", "Я пас..."),
+        ("🔥", "Да гори оно всё..."),
+        ("🚫", "Абсолютно нет..."),
+        ("🫥", "Помогите..."),
+        ("📉", "Мотивация покинула чат..."),
+        ("🐌", "Двигаемся в сторону принятия..."),
+        ("🌴", "Нужен перерыв. Лет 30..."),
+        ("🌚", "Ой,все.."),
+        ("🤷", "Как-нибудь..."),
+        ("😩", "Явно не мой день..."),
+        ("🧠", "Мозг временно недоступен..."),
+        ("😮‍💨", "Ну и ладно...")
     ]
 
     @State private var currentPhrase = "Нажми на кубик"
+    @State private var currentEmoji = "🎲"
 
     @State private var rotation: Double = 0
+    @State private var showDice = true
 
     var body: some View {
 
-        VStack(spacing: 20) {
+        VStack(spacing: 12) {
 
-            Text("🎲")
-                .font(.system(size: 60))
-                .rotationEffect(.degrees(rotation))
-                .onTapGesture {
-                    rollDice()
+            Group {
+
+                if showDice {
+
+                    Text("🎲")
+                        .font(.system(size: 52))
+                        .rotationEffect(.degrees(rotation))
+                        .onTapGesture {
+                            rollDice()
+                        }
+
+                } else {
+
+                    Text(currentEmoji)
+                        .font(.system(size: 52))
+                        .onTapGesture {
+                            resetDice()
+                        }
                 }
+            }
+
             Text(currentPhrase)
                 .font(.system(size: 18, weight: .semibold))
                 .multilineTextAlignment(.center)
@@ -56,7 +84,26 @@ struct ContentView: View {
             rotation += 360
         }
 
-        currentPhrase = phrases.randomElement() ?? "Ну и ладно."
+        let random = phrases.randomElement()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+
+            currentEmoji = random?.emoji ?? "🫠"
+            currentPhrase = random?.text ?? "Ну и ладно."
+
+            withAnimation {
+                showDice = false
+            }
+        }
+    }
+    
+    func resetDice() {
+
+        withAnimation {
+            showDice = true
+        }
+
+        currentPhrase = "Нажми на кубик"
     }
 }
 
